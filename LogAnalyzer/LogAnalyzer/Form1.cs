@@ -8,11 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LogAnalyzer
 {
     public partial class Form1 : Form
     {
+        enum LogItem
+        {
+            IDX_SERIAL,
+            IDX_NPIX,
+            IDX_SIZE
+        }
         public Form1()
         {
             InitializeComponent();
@@ -38,6 +45,9 @@ namespace LogAnalyzer
         private void button2_Click(object sender, EventArgs e)
         {
             StreamReader sr = new StreamReader(textBox1.Text);
+            Series logs = new Series();
+            logs.Name = "nPix";
+            logs.ChartType = SeriesChartType.StepLine;
             try
             {
                 while(sr.EndOfStream == false)
@@ -49,7 +59,14 @@ namespace LogAnalyzer
                         label1.Text += fields[i] + " ";
                     }
                     label1.Text += "\r\n";
+                    if (fields.Length >= (int)LogItem.IDX_SIZE)
+                    {
+                        logs.Points.AddXY(
+                            int.Parse(fields[(int)LogItem.IDX_SERIAL]),
+                            int.Parse(fields[(int)LogItem.IDX_NPIX]));
+                    }
                 }
+                chart1.Series.Add(logs);
             }
             finally
             {
