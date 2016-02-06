@@ -54,7 +54,6 @@ namespace LogAnalyzer
         private void button2_Click(object sender, EventArgs e)
         {
             const int numlog = (int)LogItem.IDX_SIZE;
-            StreamReader sr = new StreamReader(textBox1.Text);
             Series[] logs = new Series[numlog];
             bool[] showlist = new bool[numlog];
             chart1.Series.Clear();
@@ -74,9 +73,10 @@ namespace LogAnalyzer
                    showlist[logitem[item]] = true;
                }
            }
-
+           StreamReader sr = null;
             try
             {
+                sr = new StreamReader(textBox1.Text);
                 while (sr.EndOfStream == false)
                 {
                     string line = sr.ReadLine();
@@ -112,9 +112,17 @@ namespace LogAnalyzer
                     }
                 }
             }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine("ファイルが開けません");
+                System.Console.WriteLine(ex.Message);
+            }
             finally
             {
-                sr.Close();
+                if (sr != null)
+                {
+                    sr.Close();
+                }
             }
         }
     }
